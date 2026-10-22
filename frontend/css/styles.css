@@ -1,0 +1,731 @@
+/* ==========================================================================
+   SISTEMA DE GESTIÓN DE EVENTOS UNIVERSITARIOS - SISTEMA DE DISEÑO
+   Identidad visual sobria, académica y estructurada.
+   ========================================================================== */
+
+:root {
+  /* Paleta cromática académica / institucional */
+  --navy-950: #0A1128;
+  --navy-900: #0F172A;
+  --navy-850: #131E3A;
+  --navy-800: #1E293B;
+  --navy-700: #334155;
+  
+  --primary: #1E3A8A;
+  --primary-hover: #1D4ED8;
+  --primary-light: #EFF6FF;
+  --primary-border: #BFDBFE;
+
+  --teal-700: #0F766E;
+  --teal-600: #0D9488;
+  --teal-50: #F0FDFA;
+
+  --amber-600: #D97706;
+  --amber-500: #F59E0B;
+  --amber-50: #FFFBEB;
+
+  --emerald-700: #047857;
+  --emerald-600: #059669;
+  --emerald-50: #ECFDF5;
+  --emerald-border: #A7F3D0;
+
+  --rose-700: #B91C1C;
+  --rose-600: #DC2626;
+  --rose-50: #FEF2F2;
+  --rose-border: #FECACA;
+
+  /* Neutros y superficies */
+  --bg-page: #F1F5F9;
+  --surface: #FFFFFF;
+  --surface-alt: #F8FAFC;
+  --border-subtle: #E2E8F0;
+  --border-strong: #CBD5E1;
+
+  --text-heading: #0F172A;
+  --text-body: #334155;
+  --text-muted: #64748B;
+  --text-inverse: #FFFFFF;
+
+  /* Medidas y elevaciones estructuradas */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  --shadow-subtle: 0 1px 3px 0 rgba(15, 23, 42, 0.06), 0 1px 2px 0 rgba(15, 23, 42, 0.04);
+  --shadow-card: 0 2px 4px -1px rgba(15, 23, 42, 0.06), 0 4px 6px -1px rgba(15, 23, 42, 0.08);
+  --shadow-modal: 0 20px 25px -5px rgba(15, 23, 42, 0.25), 0 10px 10px -5px rgba(15, 23, 42, 0.1);
+
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --max-content-width: 1400px;
+}
+
+/* Reseteo general */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-page);
+  color: var(--text-body);
+  line-height: 1.5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================================================
+   ENCABEZADO Y NAVEGACIÓN INSTITUCIONAL
+   ========================================================================== */
+header {
+  background: linear-gradient(180deg, var(--navy-950) 0%, var(--navy-850) 100%);
+  border-bottom: 2px solid var(--amber-500);
+  padding: 0 2rem;
+  box-shadow: 0 2px 8px rgba(10, 17, 40, 0.35);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-inner {
+  max-width: var(--max-content-width);
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 64px;
+  gap: 1.5rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  color: var(--text-inverse);
+  text-decoration: none;
+}
+
+.brand-icon {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #93C5FD;
+}
+
+.brand-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-meta h1 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #FFFFFF;
+  line-height: 1.2;
+}
+
+.brand-meta span {
+  font-size: 0.75rem;
+  color: #94A3B8;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+nav {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.nav-btn {
+  background: transparent;
+  color: #CBD5E1;
+  border: none;
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.nav-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #FFFFFF;
+}
+
+.nav-btn.active {
+  background: rgba(255, 255, 255, 0.14);
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+.nav-btn.active::after {
+  content: "";
+  position: absolute;
+  bottom: -9px;
+  left: 12px;
+  right: 12px;
+  height: 3px;
+  background-color: var(--amber-500);
+  border-radius: 2px 2px 0 0;
+}
+
+/* Área de usuario y autenticación */
+.nav-auth-area {
+  display: flex;
+  align-items: center;
+  margin-left: 0.75rem;
+  padding-left: 0.75rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.user-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.825rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radius-sm);
+  color: #F8FAFC;
+}
+
+.user-badge strong {
+  color: #FDE047;
+}
+
+/* ==========================================================================
+   LAYOUT PRINCIPAL Y CONTENEDOR
+   ========================================================================== */
+.container {
+  max-width: var(--max-content-width);
+  width: 100%;
+  margin: 1.75rem auto;
+  padding: 0 2rem;
+  flex: 1;
+}
+
+/* Banner de contexto o título de sección */
+.page-header {
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-bottom: 1px solid var(--border-strong);
+  padding-bottom: 1rem;
+}
+
+.page-header-info h2 {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--text-heading);
+  letter-spacing: -0.02em;
+}
+
+.page-header-info p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+/* ==========================================================================
+   TARJETAS Y PANELES
+   ========================================================================== */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-subtle);
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.15rem 1.5rem;
+  background-color: var(--surface);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-heading);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+/* ==========================================================================
+   MÉTRICAS DEL PANEL ADMINISTRATIVO
+   ========================================================================== */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.75rem;
+}
+
+.metric-card {
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  border-left: 4px solid var(--primary);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--shadow-subtle);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
+}
+
+.metric-card.accent-teal { border-left-color: var(--teal-600); }
+.metric-card.accent-amber { border-left-color: var(--amber-500); }
+.metric-card.accent-navy { border-left-color: var(--navy-850); }
+
+.metric-card .title {
+  font-size: 0.775rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+}
+
+.metric-card .value {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: var(--text-heading);
+  line-height: 1.1;
+  margin-top: 0.5rem;
+}
+
+.metric-card .subtitle {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.4rem;
+}
+
+/* ==========================================================================
+   TABLAS DE DATOS ESTILIZADAS
+   ========================================================================== */
+.table-container {
+  overflow-x: auto;
+  border-top: 1px solid var(--border-subtle);
+  background: var(--surface);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.885rem;
+}
+
+thead th {
+  background-color: var(--surface-alt);
+  color: var(--navy-800);
+  font-weight: 700;
+  font-size: 0.785rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--border-strong);
+  white-space: nowrap;
+}
+
+tbody td {
+  padding: 0.95rem 1.25rem;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-body);
+  vertical-align: middle;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+tbody tr:hover {
+  background-color: #F8FAFC;
+}
+
+/* ==========================================================================
+   ESTADOS VACÍOS, CARGA Y NOTIFICACIONES
+   ========================================================================== */
+.empty-state {
+  padding: 3.5rem 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--surface);
+}
+
+.empty-state-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background-color: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-heading);
+  margin-bottom: 0.35rem;
+}
+
+.empty-state p {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  max-width: 440px;
+  line-height: 1.5;
+}
+
+.loading-state {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-strong);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Alertas del sistema */
+.alert {
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-sm);
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-left: 4px solid;
+  box-shadow: var(--shadow-subtle);
+  animation: fadeIn 0.2s ease;
+}
+
+.alert-success {
+  background-color: var(--emerald-50);
+  color: var(--emerald-700);
+  border-color: var(--emerald-600);
+}
+
+.alert-danger {
+  background-color: var(--rose-50);
+  color: var(--rose-700);
+  border-color: var(--rose-600);
+}
+
+/* ==========================================================================
+   BOTONES Y CONTROLES INTERACTIVOS
+   ========================================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1.15rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.15s ease-in-out;
+  text-decoration: none;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: var(--text-inverse);
+  border-color: var(--primary);
+}
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.btn-secondary {
+  background-color: var(--teal-600);
+  color: var(--text-inverse);
+  border-color: var(--teal-600);
+}
+.btn-secondary:hover {
+  background-color: var(--teal-700);
+  border-color: var(--teal-700);
+}
+
+.btn-outline {
+  background-color: transparent;
+  border-color: var(--border-strong);
+  color: var(--navy-800);
+}
+.btn-outline:hover {
+  background-color: var(--surface-alt);
+  border-color: var(--navy-700);
+}
+
+.btn-danger {
+  background-color: var(--rose-600);
+  color: var(--text-inverse);
+  border-color: var(--rose-600);
+}
+.btn-danger:hover {
+  background-color: var(--rose-700);
+  border-color: var(--rose-700);
+}
+
+.btn-sm {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+/* ==========================================================================
+   INSIGNIAS Y ESTADOS (BADGES)
+   ========================================================================== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border: 1px solid transparent;
+}
+
+.badge-open, .badge-active {
+  background-color: var(--emerald-50);
+  color: var(--emerald-700);
+  border-color: var(--emerald-border);
+}
+
+.badge-closed, .badge-cancelled {
+  background-color: var(--rose-50);
+  color: var(--rose-700);
+  border-color: var(--rose-border);
+}
+
+.badge-finished {
+  background-color: #F1F5F9;
+  color: #475569;
+  border-color: #CBD5E1;
+}
+
+.badge-type {
+  background-color: var(--primary-light);
+  color: var(--primary);
+  border-color: var(--primary-border);
+}
+
+/* ==========================================================================
+   FORMULARIOS Y CAMPOS DE ENTRADA
+   ========================================================================== */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.25rem;
+}
+
+.form-group {
+  margin-bottom: 1.15rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.825rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.4rem;
+  color: var(--navy-800);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  font-size: 0.925rem;
+  color: var(--text-heading);
+  background-color: #FFFFFF;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.12);
+}
+
+/* ==========================================================================
+   MODALES
+   ========================================================================== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(10, 17, 40, 0.65);
+  backdrop-filter: blur(2px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.modal-content {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  max-width: 580px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-modal);
+  border: 1px solid var(--border-strong);
+}
+
+.modal-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--surface-alt);
+}
+
+.modal-header h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-heading);
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-footer {
+  padding: 1rem 1.5rem;
+  background-color: var(--surface-alt);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+/* Pestañas */
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+  animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   RESPONSIVE / PANTALLAS PEQUEÑAS
+   ========================================================================== */
+@media (max-width: 900px) {
+  header {
+    padding: 0.75rem 1rem;
+  }
+
+  .header-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  nav {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  .nav-auth-area {
+    margin-left: 0;
+    padding-left: 0;
+    border-left: none;
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .container {
+    padding: 0 1rem;
+    margin: 1.25rem auto;
+  }
+
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}

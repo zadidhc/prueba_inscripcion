@@ -1,0 +1,472 @@
+openapi: 3.0.3
+info:
+  title: API de Gestión de Eventos Universitarios, Inscripciones y Asistencia
+  description: API REST para la administración de eventos académicos, registro de inscripciones, control de asistencia por sesiones y emisión de certificados en PDF.
+  version: 1.0.0
+
+paths:
+  /api/v1/auth/login:
+    post:
+      summary: Inicio de sesión de personal y administradores
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Autenticación exitosa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Credenciales inválidas
+
+  /api/v1/auth/me:
+    get:
+      summary: Obtener información del usuario autenticado
+      responses:
+        '200':
+          description: Datos del usuario actual
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+
+  /api/v1/events:
+    get:
+      summary: Listar eventos académicos
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [ABIERTA, CERRADA]
+      responses:
+        '200':
+          description: Lista de eventos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventResponse'
+    post:
+      summary: Registrar nuevo evento académico
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventCreate'
+      responses:
+        '201':
+          description: Evento creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        '422':
+          description: Error de validación
+
+  /api/v1/events/{event_id}:
+    get:
+      summary: Obtener detalle de un evento
+      parameters:
+        - name: event_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Detalle del evento con sus sesiones
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventDetailResponse'
+        '404':
+          description: Evento no encontrado
+    put:
+      summary: Actualizar evento académico
+      parameters:
+        - name: event_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventUpdate'
+      responses:
+        '200':
+          description: Evento actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        '404':
+          description: Evento no encontrado
+
+  /api/v1/events/{event_id}/sessions:
+    post:
+      summary: Agregar una sesión al evento
+      parameters:
+        - name: event_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionCreate'
+      responses:
+        '201':
+          description: Sesión agregada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionResponse'
+
+  /api/v1/registrations:
+    get:
+      summary: Listar y filtrar inscripciones
+      parameters:
+        - name: event_id
+          in: query
+          schema:
+            type: integer
+        - name: document_id
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [INSCRITO, CANCELADO, FINALIZADO]
+      responses:
+        '200':
+          description: Lista de inscripciones
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RegistrationResponse'
+    post:
+      summary: Inscribir participante a un evento
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrationCreate'
+      responses:
+        '201':
+          description: Inscripción registrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegistrationResponse'
+        '400':
+          description: Regla de negocio violada (cupos agotados, evento cerrado, ya inscrito)
+        '422':
+          description: Error de validación
+
+  /api/v1/registrations/{registration_id}/status:
+    patch:
+      summary: Actualizar estado de una inscripción (ej. cancelar)
+      parameters:
+        - name: registration_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrationStatusUpdate'
+      responses:
+        '200':
+          description: Estado actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegistrationResponse'
+
+  /api/v1/attendances:
+    post:
+      summary: Registrar asistencia de participante por documento a una sesión
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttendanceCreate'
+      responses:
+        '201':
+          description: Asistencia registrada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttendanceResponse'
+        '400':
+          description: Violación de regla de negocio (duplicado, inscripción cancelada o no existente)
+
+  /api/v1/events/{event_id}/attendances:
+    get:
+      summary: Listar estado de asistencia de todos los inscritos en el evento
+      parameters:
+        - name: event_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Matriz de asistencia por participantes y sesiones
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ParticipantAttendanceReport'
+
+  /api/v1/events/{event_id}/certificates/eligible:
+    get:
+      summary: Consultar lista de participantes elegibles para certificado en un evento
+      parameters:
+        - name: event_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de participantes con su estado de elegibilidad
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CertificateEligibilityResponse'
+
+  /api/v1/certificates/{registration_id}/pdf:
+    get:
+      summary: Descargar certificado de asistencia en formato PDF
+      parameters:
+        - name: registration_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Archivo PDF del certificado
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: El participante no es elegible para el certificado
+        '404':
+          description: Inscripción no encontrada
+
+  /api/v1/dashboard/metrics:
+    get:
+      summary: Obtener métricas para el panel de control
+      responses:
+        '200':
+          description: Métricas agregadas del sistema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardMetrics'
+
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username: { type: string }
+        password: { type: string }
+
+    LoginResponse:
+      type: object
+      properties:
+        access_token: { type: string }
+        token_type: { type: string }
+        user: { $ref: '#/components/schemas/UserResponse' }
+
+    UserResponse:
+      type: object
+      properties:
+        id: { type: integer }
+        username: { type: string }
+        full_name: { type: string }
+        role: { type: string, enum: [admin, staff] }
+
+    EventCreate:
+      type: object
+      required: [title, description, start_time, location, max_capacity]
+      properties:
+        title: { type: string }
+        description: { type: string }
+        start_time: { type: string, format: date-time }
+        location: { type: string }
+        max_capacity: { type: integer, minimum: 1 }
+        status: { type: string, enum: [ABIERTA, CERRADA], default: ABIERTA }
+
+    EventUpdate:
+      type: object
+      properties:
+        title: { type: string }
+        description: { type: string }
+        start_time: { type: string, format: date-time }
+        location: { type: string }
+        max_capacity: { type: integer, minimum: 1 }
+        status: { type: string, enum: [ABIERTA, CERRADA] }
+
+    SessionCreate:
+      type: object
+      required: [title, session_date]
+      properties:
+        title: { type: string }
+        session_date: { type: string, format: date-time }
+        is_mandatory: { type: boolean, default: true }
+
+    SessionResponse:
+      type: object
+      properties:
+        id: { type: integer }
+        event_id: { type: integer }
+        title: { type: string }
+        session_date: { type: string }
+        is_mandatory: { type: boolean }
+
+    EventResponse:
+      type: object
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        description: { type: string }
+        start_time: { type: string }
+        location: { type: string }
+        max_capacity: { type: integer }
+        status: { type: string }
+        active_registrations_count: { type: integer }
+
+    EventDetailResponse:
+      allOf:
+        - $ref: '#/components/schemas/EventResponse'
+        - type: object
+          properties:
+            sessions:
+              type: array
+              items:
+                $ref: '#/components/schemas/SessionResponse'
+
+    RegistrationCreate:
+      type: object
+      required: [event_id, document_id, full_name, email, participant_type]
+      properties:
+        event_id: { type: integer }
+        document_id: { type: string }
+        full_name: { type: string }
+        email: { type: string, format: email }
+        participant_type: { type: string, enum: [estudiante, docente, externo] }
+
+    RegistrationResponse:
+      type: object
+      properties:
+        id: { type: integer }
+        code: { type: string }
+        event_id: { type: integer }
+        event_title: { type: string }
+        participant_id: { type: integer }
+        document_id: { type: string }
+        full_name: { type: string }
+        email: { type: string }
+        participant_type: { type: string }
+        status: { type: string, enum: [INSCRITO, CANCELADO, FINALIZADO] }
+        created_at: { type: string }
+
+    RegistrationStatusUpdate:
+      type: object
+      required: [status]
+      properties:
+        status: { type: string, enum: [INSCRITO, CANCELADO, FINALIZADO] }
+
+    AttendanceCreate:
+      type: object
+      required: [session_id, document_id]
+      properties:
+        session_id: { type: integer }
+        document_id: { type: string }
+
+    AttendanceResponse:
+      type: object
+      properties:
+        id: { type: integer }
+        session_id: { type: integer }
+        registration_id: { type: integer }
+        participant_name: { type: string }
+        document_id: { type: string }
+        registered_at: { type: string }
+
+    ParticipantAttendanceReport:
+      type: object
+      properties:
+        registration_id: { type: integer }
+        code: { type: string }
+        document_id: { type: string }
+        full_name: { type: string }
+        participant_type: { type: string }
+        status: { type: string }
+        attended_sessions: { type: integer }
+        total_mandatory_sessions: { type: integer }
+        attendance_percentage: { type: number }
+        is_eligible_certificate: { type: boolean }
+
+    CertificateEligibilityResponse:
+      type: object
+      properties:
+        registration_id: { type: integer }
+        code: { type: string }
+        document_id: { type: string }
+        full_name: { type: string }
+        is_eligible: { type: boolean }
+        reason: { type: string }
+
+    DashboardMetrics:
+      type: object
+      properties:
+        total_events: { type: integer }
+        open_events: { type: integer }
+        total_registrations: { type: integer }
+        total_attendances: { type: integer }
+        total_eligible_certificates: { type: integer }
+        events_summary:
+          type: array
+          items:
+            type: object
+            properties:
+              event_id: { type: integer }
+              title: { type: string }
+              capacity: { type: integer }
+              registrations: { type: integer }
+              attendances: { type: integer }
+              status: { type: string }

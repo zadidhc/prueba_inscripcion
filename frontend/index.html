@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Gestión de Eventos Universitarios | UNA</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Encabezado Institucional -->
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+            <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+          </svg>
+        </div>
+        <div class="brand-meta">
+          <h1>Universidad Nacional Autónoma</h1>
+          <span>Portal de Eventos y Certificación</span>
+        </div>
+      </div>
+
+      <nav>
+        <button class="nav-btn active" data-tab="tab-public">Eventos Académicos</button>
+        <button class="nav-btn" data-tab="tab-search">Consultar Inscripción</button>
+        <button class="nav-btn" data-tab="tab-attendance" id="nav-att" style="display:none;">Control Asistencia</button>
+        <button class="nav-btn" data-tab="tab-admin-events" id="nav-events" style="display:none;">Administrar Eventos</button>
+        <button class="nav-btn" data-tab="tab-dashboard" id="nav-dash" style="display:none;">Panel de Control</button>
+        
+        <div class="nav-auth-area">
+          <div id="auth-section">
+            <button class="btn btn-outline btn-sm" id="btn-open-login" style="color:#FFFFFF; border-color:rgba(255,255,255,0.35);">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/>
+              </svg>
+              Acceso Personal
+            </button>
+          </div>
+          <div id="user-info" class="user-badge" style="display:none;">
+            <span id="user-display">Usuario</span>
+            <button class="btn btn-sm btn-outline" id="btn-logout" style="padding:0.2rem 0.5rem; color:#FFFFFF; border-color:rgba(255,255,255,0.25);">Salir</button>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div id="global-alert" style="display:none;"></div>
+
+    <!-- PESTAÑA 1: EVENTOS E INSCRIPCIÓN PÚBLICA -->
+    <section id="tab-public" class="tab-content active">
+      <div class="page-header">
+        <div class="page-header-info">
+          <h2>Catálogo de Eventos Académicos</h2>
+          <p>Conferencias, talleres y seminarios con inscripción abierta y cupos disponibles.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            Eventos Programados
+          </span>
+          <button class="btn btn-outline btn-sm" id="btn-refresh-public">Actualizar</button>
+        </div>
+        <div class="table-container">
+          <table id="table-public-events">
+            <thead>
+              <tr>
+                <th style="width: 70px;">ID</th>
+                <th>Evento y Descripción</th>
+                <th>Fecha y Horario</th>
+                <th>Ubicación / Salón</th>
+                <th>Capacidad</th>
+                <th>Disponibilidad</th>
+                <th style="text-align: right;">Inscripción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="7"><div class="loading-state"><div class="spinner"></div> Cargando eventos...</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 2: CONSULTAR INSCRIPCIÓN Y CERTIFICADOS -->
+    <section id="tab-search" class="tab-content">
+      <div class="page-header">
+        <div class="page-header-info">
+          <h2>Consulta de Participante y Certificado</h2>
+          <p>Verifique el estado de su registro y descargue su certificado oficial en formato PDF.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body" style="background-color: var(--surface-alt); border-bottom: 1px solid var(--border-subtle);">
+          <form id="form-search-participant" style="display:flex; gap:0.75rem; max-width:600px;">
+            <div style="flex:1;">
+              <input type="text" id="search-doc" placeholder="Ingrese Documento de Identidad (DNI)" required>
+            </div>
+            <button type="submit" class="btn btn-primary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              Consultar
+            </button>
+          </form>
+        </div>
+
+        <div id="search-results" style="display:none;">
+          <div class="card-header">
+            <span class="card-title">Registros Encontrados</span>
+          </div>
+          <div class="table-container">
+            <table id="table-search-results">
+              <thead>
+                <tr>
+                  <th>Código</th>
+                  <th>Evento Académico</th>
+                  <th>Participante</th>
+                  <th>Tipo</th>
+                  <th>Estado</th>
+                  <th style="text-align: right;">Certificado Oficial</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 3: CONTROL DE ASISTENCIA (PERSONAL DE REGISTRO / ADMIN) -->
+    <section id="tab-attendance" class="tab-content">
+      <div class="page-header">
+        <div class="page-header-info">
+          <h2>Control y Registro de Asistencia</h2>
+          <p>Marcado de asistencia presencial a sesiones académicas mediante documento de identidad.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body" style="background-color: var(--surface-alt); border-bottom: 1px solid var(--border-subtle);">
+          <div class="form-grid">
+            <div class="form-group" style="margin-bottom:0;">
+              <label for="att-event-select">1. Seleccionar Evento</label>
+              <select id="att-event-select">
+                <option value="">Seleccione un evento académico...</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label for="att-session-select">2. Seleccionar Sesión Programada</label>
+              <select id="att-session-select" disabled>
+                <option value="">Primero elija un evento</option>
+              </select>
+            </div>
+          </div>
+
+          <form id="form-mark-attendance" style="display:flex; gap:0.75rem; align-items:flex-end; max-width:600px; margin-top:1.25rem;">
+            <div class="form-group" style="flex:1; margin-bottom:0;">
+              <label for="att-doc">3. DNI del Participante Presente</label>
+              <input type="text" id="att-doc" placeholder="Ingrese DNI para registrar asistencia" required>
+            </div>
+            <button type="submit" class="btn btn-secondary" id="btn-submit-att" disabled>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              Marcar Asistencia
+            </button>
+          </form>
+        </div>
+
+        <div class="card-header">
+          <span class="card-title">Listado de Inscritos y Matriz de Asistencia</span>
+          <button class="btn btn-outline btn-sm" id="btn-refresh-att">Actualizar Lista</button>
+        </div>
+        <div class="table-container">
+          <table id="table-attendance-matrix">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>DNI</th>
+                <th>Nombre del Participante</th>
+                <th>Tipo</th>
+                <th>Estado</th>
+                <th>Sesiones Asistidas</th>
+                <th>% Cumplido</th>
+                <th style="text-align: right;">Elegibilidad</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="8"><div class="empty-state"><p>Seleccione un evento académico para visualizar el control de asistencia.</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 4: GESTIÓN DE EVENTOS (ADMINISTRADOR) -->
+    <section id="tab-admin-events" class="tab-content">
+      <div class="page-header">
+        <div class="page-header-info">
+          <h2>Administración de Eventos Académicos</h2>
+          <p>Alta, edición de cupos y control de inscripciones del calendario institucional.</p>
+        </div>
+        <button class="btn btn-primary btn-sm" id="btn-open-create-event">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Registrar Evento
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Inventario de Eventos</span>
+        </div>
+        <div class="table-container">
+          <table id="table-admin-events">
+            <thead>
+              <tr>
+                <th style="width: 70px;">ID</th>
+                <th>Título del Evento</th>
+                <th>Fecha y Hora</th>
+                <th>Lugar</th>
+                <th>Capacidad Máxima</th>
+                <th>Inscritos</th>
+                <th>Estado Inscripciones</th>
+                <th style="text-align: right;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 5: DASHBOARD Y REPORTES (ADMINISTRADOR) -->
+    <section id="tab-dashboard" class="tab-content">
+      <div class="page-header">
+        <div class="page-header-info">
+          <h2>Panel de Control y Métricas</h2>
+          <p>Indicadores consolidados en tiempo real del sistema de eventos universitarios.</p>
+        </div>
+        <button class="btn btn-outline btn-sm" id="btn-refresh-metrics">Actualizar Indicadores</button>
+      </div>
+
+      <div class="metrics-grid">
+        <div class="metric-card accent-navy">
+          <span class="title">Total de Eventos</span>
+          <span class="value" id="metric-total-events">0</span>
+          <span class="subtitle">Registrados en la plataforma</span>
+        </div>
+        <div class="metric-card accent-teal">
+          <span class="title">Eventos Abiertos</span>
+          <span class="value" id="metric-open-events" style="color:var(--teal-600);">0</span>
+          <span class="subtitle">Recibiendo inscripciones</span>
+        </div>
+        <div class="metric-card">
+          <span class="title">Participantes Inscritos</span>
+          <span class="value" id="metric-total-regs">0</span>
+          <span class="subtitle">Inscripciones activas</span>
+        </div>
+        <div class="metric-card accent-teal">
+          <span class="title">Asistencias Marcadas</span>
+          <span class="value" id="metric-total-atts">0</span>
+          <span class="subtitle">En sesiones académicas</span>
+        </div>
+        <div class="metric-card accent-amber">
+          <span class="title">Elegibles para Certificado</span>
+          <span class="value" id="metric-total-certs" style="color:var(--amber-600);">0</span>
+          <span class="subtitle">100% de asistencia cumplida</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Resumen Operativo por Evento</span>
+        </div>
+        <div class="table-container">
+          <table id="table-summary-events">
+            <thead>
+              <tr>
+                <th style="width: 70px;">ID</th>
+                <th>Evento Académico</th>
+                <th>Capacidad Máxima</th>
+                <th>Inscritos Activos</th>
+                <th>Asistencias Totales</th>
+                <th>Estado de Inscripción</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL: INICIAR SESIÓN -->
+  <div id="modal-login" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Acceso de Personal y Administradores</h3>
+        <button class="btn btn-outline btn-sm" id="btn-close-login" style="padding:0.2rem 0.5rem;">&times;</button>
+      </div>
+      <form id="form-login">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="login-username">Usuario Institucional</label>
+            <input type="text" id="login-username" placeholder="admin o staff" required autofocus>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label for="login-password">Contraseña</label>
+            <input type="password" id="login-password" placeholder="admin123 o staff123" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" id="btn-cancel-login">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Ingresar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: INSCRIPCIÓN DE PARTICIPANTE -->
+  <div id="modal-register" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Formulario de Inscripción</h3>
+        <button class="btn btn-outline btn-sm" id="btn-close-register" style="padding:0.2rem 0.5rem;">&times;</button>
+      </div>
+      <form id="form-register-participant">
+        <div class="modal-body">
+          <input type="hidden" id="reg-event-id">
+          <div class="form-group">
+            <label>Evento Seleccionado</label>
+            <input type="text" id="reg-event-title" readonly style="background-color:var(--surface-alt); font-weight:600;">
+          </div>
+          <div class="form-group">
+            <label for="reg-doc">Documento de Identidad (DNI)</label>
+            <input type="text" id="reg-doc" placeholder="Ej. 71234567" required>
+          </div>
+          <div class="form-group">
+            <label for="reg-name">Nombres y Apellidos Completos</label>
+            <input type="text" id="reg-name" placeholder="Ej. Carlos Mendoza Morales" required>
+          </div>
+          <div class="form-group">
+            <label for="reg-email">Correo Electrónico Institucional / Personal</label>
+            <input type="email" id="reg-email" placeholder="carlos.mendoza@universidad.edu" required>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label for="reg-type">Tipo de Participante</label>
+            <select id="reg-type" required>
+              <option value="estudiante">Estudiante Universitario</option>
+              <option value="docente">Docente / Investigador</option>
+              <option value="externo">Participante Externo</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" id="btn-cancel-register">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Confirmar Inscripción</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: CREAR/EDITAR EVENTO -->
+  <div id="modal-event" class="modal-overlay">
+    <div class="modal-content" style="max-width:640px;">
+      <div class="modal-header">
+        <h3 id="modal-event-title">Nuevo Evento Académico</h3>
+        <button class="btn btn-outline btn-sm" id="btn-close-event-modal" style="padding:0.2rem 0.5rem;">&times;</button>
+      </div>
+      <form id="form-event-manage">
+        <div class="modal-body">
+          <input type="hidden" id="manage-event-id">
+          <div class="form-group">
+            <label for="ev-title">Título del Evento Académico</label>
+            <input type="text" id="ev-title" required placeholder="Ej. Simposio Internacional de Inteligencia Artificial">
+          </div>
+          <div class="form-group">
+            <label for="ev-desc">Descripción y Temas Clave</label>
+            <textarea id="ev-desc" rows="3" required placeholder="Detalles de las ponencias, expositores y objetivos..."></textarea>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="ev-date">Fecha y Hora de Inicio</label>
+              <input type="datetime-local" id="ev-date" required>
+            </div>
+            <div class="form-group">
+              <label for="ev-capacity">Capacidad Máxima (> 0)</label>
+              <input type="number" id="ev-capacity" min="1" required placeholder="Ej. 60">
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group" style="margin-bottom:0;">
+              <label for="ev-location">Lugar / Salón o Auditorio</label>
+              <input type="text" id="ev-location" required placeholder="Ej. Aula Magna - Pabellón B">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label for="ev-status">Estado de Inscripciones</label>
+              <select id="ev-status">
+                <option value="ABIERTA">ABIERTA</option>
+                <option value="CERRADA">CERRADA</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" id="btn-cancel-event-modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-event">Guardar Evento</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+# Entorno virtual y Python
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.pytest_cache/
+
+# Base de datos local SQLite
+*.db
+*.sqlite3
+
+# Logs y temporales
+*.log
+.DS_Store
+Thumbs.db
